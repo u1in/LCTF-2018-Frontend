@@ -4,21 +4,21 @@
 
 1. 安装依赖
 
-  ```bash
-  npm install
-  ```
+```bash
+npm install
+```
 
 2. 测试运行
 
-   ```bash
-   npm run dev
-   ```
+ ```bash
+ npm run dev
+ ```
 
 3. 打包项目
 
-   ```bash
-   npm run build
-   ```
+ ```bash
+ npm run build
+ ```
 
    ​
 
@@ -43,15 +43,15 @@
 
 | 接口url           | 请求方式 | 请求参数                                     | 响应参数                                     | 备注          |
 | --------------- | ---- | ---------------------------------------- | ---------------------------------------- | ----------- |
-| /get_token      | GET  |                                          | {token: String}                          | 后端框架需要的一个请求 |
-| /register       | POST | {<br>name: String,<br>email: String,<br>password: String,<br>school: String} |                                          | 注册接口        |
-| /login          | POST | {name: String, password: String}         | {code: Number, message: String, team_id: Number} | 登陆接口        |
-| /get_all        | GET  |                                          | {"0": {avatar: "www.xxx.com/image.jpg",done: 1, title: "官方公告", type: "notice", text: ['Welcome LCTF 2018', 'Test Message', …]}, {}, {}, …} | 请求题目接口      |
-| /team/:id       | GET  |                                          | {name: 'L-team', rank: 1, score: "1000.00", solves: [{category: 'MISC', date: '2018-11-17 09:00:00'}, name: '签到题', score: '35.34']} | 查询队伍接口      |
-| /scoreboard     | GET  |                                          | [{score: '1000.00', id: 1, name: 'L-team'}, {}, {}] | 查询排行榜接口     |
-| /challenge_rank | GET  |                                          | [{category: 'web', name: 'Test_Challenge', score: '1000.00'}, {}, {}] | 查询题目榜接口     |
-| /get_score      | POST | {id: String}                             | {code: 1, score: '1000.00'}              | 查询分数接口      |
-| /submit         | POST | {id: "1", flag: "LCTF{}"}                | {code: 1, message: "Your Flag is correct"} | 提交flag接口    |
+| /get_token      | GET  |                                          | {token: String}                          | Django需要的CSRF Token。换框架注意删除。 |
+| /register       | POST | {<br>&nbsp;&nbsp;&nbsp;&nbsp;name: "L-team",<br>&nbsp;&nbsp;&nbsp;&nbsp;email: "L-team@email.com",<br>&nbsp;&nbsp;&nbsp;&nbsp;password: "L-team",<br>&nbsp;&nbsp;&nbsp;&nbsp;school: "L-team"} |                                          | 注册接口        |
+| /login          | POST | {<br>&nbsp;&nbsp;&nbsp;&nbsp;name: "L-team",<br>&nbsp;&nbsp;&nbsp;&nbsp;password: "L-team"<br>}         | {<br>&nbsp;&nbsp;&nbsp;&nbsp;code: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;message: "Login Success!",<br>&nbsp;&nbsp;&nbsp;&nbsp;team_id: 1<br>&nbsp;&nbsp;&nbsp;&nbsp;} | 登陆接口        |
+| /get_all        | GET  |                                          | {<br>&nbsp;&nbsp;&nbsp;&nbsp;"0":{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;avatar: "www.xxx.com/image.jpg",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;done: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: "官方公告",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: "notice",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text: [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Welcome LCTF 2018',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Test Message',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;…<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]},<br> {}, {}, …} | 请求题目接口      |
+| /team/:id       | GET  |                                          | {<br>&nbsp;&nbsp;&nbsp;&nbsp;name: 'L-team',<br>&nbsp;&nbsp;&nbsp;&nbsp;rank: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;score: "1000.00",<br>&nbsp;&nbsp;&nbsp;&nbsp;solves: [{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;category: 'MISC',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;date: '2018-11-17 09:00:00',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: '签到题',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;score: '35.34'}, {}, {}]<br>} | 查询队伍接口      |
+| /scoreboard     | GET  |                                          | [{<br>&nbsp;&nbsp;&nbsp;&nbsp;score: '1000.00',<br>&nbsp;&nbsp;&nbsp;&nbsp;id: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;name: 'L-team'<br>}, {}, {}] | 查询排行榜接口     |
+| /challenge_rank | GET  |                                          | [{<br>&nbsp;&nbsp;&nbsp;&nbsp;category: 'web',<br>&nbsp;&nbsp;&nbsp;&nbsp;name: 'Test_Challenge',<br>&nbsp;&nbsp;&nbsp;&nbsp;score: '1000.00'<br>},{}, {}] | 查询题目榜接口     |
+| /get_score      | POST | {<br>&nbsp;&nbsp;&nbsp;&nbsp;id: 1<br>}                             | {<br>&nbsp;&nbsp;&nbsp;&nbsp;code: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;score: '1000.00'<br>}              | 查询分数接口      |
+| /submit         | POST | {<br>&nbsp;&nbsp;&nbsp;&nbsp;id: "1",<br>&nbsp;&nbsp;&nbsp;&nbsp;flag: "LCTF{}"<br>}                | {<br>&nbsp;&nbsp;&nbsp;&nbsp;code: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;message: "Your Flag is correct"<br>} | 提交flag接口    |
 
 
 
@@ -59,14 +59,16 @@
 
 ```
 {
-    code: 1, 
     //用于标记返回值是否为预料中的值。
     //1为成功请求比如登陆成功注册成功提交flag成功。
     //0，为意料之外的值比如登陆失败注册失败提交flag错误。
-  
-    message: "Text", //作为code的说明
-  
-    data: [] //返回成功后的数据，不一定都叫data，具体看接口文档
+    code: 1, 
+    
+    //作为code的说明
+    message: "Text", 
+    
+    //返回成功后的数据，不一定都叫data，具体看接口文档
+    data: [] 
 }
 ```
 
