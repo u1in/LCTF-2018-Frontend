@@ -107,24 +107,22 @@ export default {
             score: 0,
             solves: [],
             tableLoading: true,
-            echartData: [
-                {
-                    name: 'web',
-                    value: 0,
-                },{
-                    name: 're',
-                    value: 0,
-                },{
-                    name: 'pwn',
-                    value: 0,
-                },{
-                    name: 'misc',
-                    value: 0,
-                },{
-                    name: 'crypto',
-                    value: 0,
-                }
-            ],
+            echartData: [{
+                name: 'web',
+                value: 0,
+            },{
+                name: 're',
+                value: 0,
+            },{
+                name: 'pwn',
+                value: 0,
+            },{
+                name: 'misc',
+                value: 0,
+            },{
+                name: 'crypto',
+                value: 0,
+            }],
         }
     },
     computed: {
@@ -196,19 +194,17 @@ export default {
                 this.tableLoading = false;
                 for(let i in resp.solves) {
                     this.solves.push(resp.solves[i]);
-                    let data = {
-                        category: resp.solves[i].category.toUpperCase(),
-                        value: parseFloat(resp.solves[i].score),
-                        name: resp.solves[i].category.toUpperCase()
-                    };
-                    for(let j in this.echartData) {
-                        if(this.echartData[j].name === resp.solves[i].category.toLowerCase()) {
+                    for(let ii in this.echartData) {
+                        if(this.echartData[ii].name === resp.solves[i].category.toLowerCase()) {
                             //此处有.000000000002 bug 注意截取小数点后位数
-                            this.echartData[j].value += parseFloat(resp.solves[i].score).toFixed(3);
+                            this.echartData[ii].value = (parseFloat(this.echartData[ii].value) + parseFloat(resp.solves[i].score)).toFixed(3);
                         }
                     }
                 }
                 this.echartData.sort( (a,b) => { return a.value - b.value});
+                this.$nextTick(() => {
+                    this.drawPie();
+                })
             }).catch(error => console.log(error));
         },
         drawPie () {
@@ -257,16 +253,11 @@ export default {
             myChart.setOption(option);
         },
     },
-    watch: {
-        echartData () {
-            this.drawPie();
-        }
-    },
     created () {
         this.getInfo(this.$route.params.id);
     },
     mounted () {
-        console.log(this.solves);
+        
     }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        
+        <div v-html="html"></div>
     </div>
 </template>
 
@@ -9,6 +9,7 @@
         data() {
             return {
                 countDownTime: '尚未开始',
+                html: '',
             }
         },
         methods: {
@@ -17,13 +18,21 @@
             },
             start() {
                 this.$router.push('/login');
+            },
+            getHtml () {
+                this.$get('/get_index').then(resp => {
+                    if(resp.code === 1) {
+                        this.html = resp.content;
+                    }
+                }).catch(error => {console.log(error)});
+                
             }
         },
         mounted () {
             
         },
         created () {
-            
+            this.getHtml();
         },
         beforeDestroy () {
             
@@ -32,19 +41,9 @@
 </script>
 
 <style scoped>
-@media screen and (min-width: 600px){
-    .container {
-        height: 100%;
-        width: 100%;
-        
-    }
+.container {
+    height: 100%;
+    width: 100%;
     
-}
-@media screen and (max-width: 600px){
-    .container {
-        height: 100%;
-        width: 100%;
-        
-    }
 }
 </style>
