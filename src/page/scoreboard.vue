@@ -21,7 +21,7 @@
                     </div>
 
                     <!-- 加载图标 -->
-                    <div class="loading">
+                    <div v-if="scoreboard === ''" class="loading">
                         <font-awesome-icon icon="spinner" spin />
                     </div>
                 </div>
