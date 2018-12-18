@@ -1,4 +1,4 @@
-var baseURL = 'http://localhost:8000/api';
+var baseURL = '/api';
 
 var baseTime = 60000;
 
