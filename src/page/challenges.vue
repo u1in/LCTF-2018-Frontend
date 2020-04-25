@@ -23,28 +23,44 @@
                         <div class="unread" v-show="cnt_unread[notice] != 0">{{cnt_unread[notice]}}</div>
                     </div>
 
-                    <div class="group-container" v-for="(value, key) in catagorized_challs" :key="key" v-if="catagorized_challs != {}">
+                    <div
+                        class="group-container"
+                        v-for="(value, key) in catagorized_challs"
+                        :key="key"
+                        v-if="catagorized_challs != {}"
+                    >
                         <!-- 生成分组的名字，可点击用于折叠 -->
                         <div class="group" @click="has_category[key] = !has_category[key]">
                             <div class="group-name">
-                                <font-awesome-icon :icon="has_category[key] ? 'chevron-down' : 'chevron-right'" class="icon"/>
+                                <font-awesome-icon
+                                    :icon="has_category[key] ? 'chevron-down' : 'chevron-right'"
+                                    class="icon"
+                                />
                                 {{key.toUpperCase()}}
                             </div>
-                            <div class="group-number">{{cnt_done[key] + '/' + Object.keys(catagorized_challs[key]).length}}</div>
+                            <div
+                                class="group-number"
+                            >{{cnt_done[key] + '/' + Object.keys(catagorized_challs[key]).length}}</div>
                         </div>
                         <!-- 生成会话头像 -->
                         <div v-show="has_category[key]" class="group-list">
                             <!-- 此处偷懒，其实可以先sort好List再渲染 -->
                             <!-- 先生成还没完成的题目 -->
-                            <div v-for="(value2, key2) in catagorized_challs[key]" :key="key2" :class="['talk-item', active == key2 ? 'active' : '']" @click="chooseTalk(key2)" v-if="value2.done === 0">
+                            <div
+                                v-for="(value2, key2) in catagorized_challs[key]"
+                                :key="key2"
+                                :class="['talk-item', active == key2 ? 'active' : '']"
+                                @click="chooseTalk(key2)"
+                                v-if="value2.done === 0"
+                            >
                                 <div class="avatar">
                                     <img :src="value2.avatar" />
                                 </div>
                                 <div class="text">
                                     <div class="name">{{value2.title}}</div>
-                                    <div v-if="chat_storage[key2].length > 0">
-                                        {{chat_storage[key2][chat_storage[key2].length - 1].text}}
-                                    </div>
+                                    <div
+                                        v-if="chat_storage[key2].length > 0"
+                                    >{{chat_storage[key2][chat_storage[key2].length - 1].text}}</div>
                                 </div>
                                 <div
                                     class="unread"
@@ -52,17 +68,26 @@
                                 >{{cnt_unread[key2]}}</div>
                             </div>
                             <!-- 后生成还完成的题目， 对公告不应用disable样式 -->
-                            <div v-for="(value3, key3) in catagorized_challs[key]" :key="key3" :class="['talk-item', 'disable', active == key3 ? 'active' : '']" @click="chooseTalk(key3)" v-if="value3.done != 0">
+                            <div
+                                v-for="(value3, key3) in catagorized_challs[key]"
+                                :key="key3"
+                                :class="['talk-item', 'disable', active == key3 ? 'active' : '']"
+                                @click="chooseTalk(key3)"
+                                v-if="value3.done != 0"
+                            >
                                 <div class="avatar">
                                     <img :src="value3.avatar" />
                                 </div>
                                 <div class="text">
                                     <div class="name">{{value3.title}}</div>
-                                    <div v-if="chat_storage[key3].length > 0">
-                                        {{chat_storage[key3][chat_storage[key3].length - 1].text}}
-                                    </div>
+                                    <div
+                                        v-if="chat_storage[key3].length > 0"
+                                    >{{chat_storage[key3][chat_storage[key3].length - 1].text}}</div>
                                 </div>
-                                <div class="unread" v-show="cnt_unread[key3] != 0">{{cnt_unread[key3]}}</div>
+                                <div
+                                    class="unread"
+                                    v-show="cnt_unread[key3] != 0"
+                                >{{cnt_unread[key3]}}</div>
                             </div>
                         </div>
                     </div>
@@ -94,12 +119,15 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import HeadBar from '../components/HeadBar.vue'
-import ChatWindow from '../components/ChatWindow'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import ajax from '../tools/ajax'
+import Vue from "vue";
+import HeadBar from "../components/HeadBar.vue";
+import ChatWindow from "../components/ChatWindow";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faChevronRight,
+    faChevronDown
+} from "@fortawesome/free-solid-svg-icons";
+import ajax from "../tools/ajax";
 
 library.add(faChevronRight);
 library.add(faChevronDown);
@@ -112,20 +140,20 @@ export default {
     data() {
         return {
             persisted: [
-                'chat_storage',
-                'challs',
-                'catagorized_challs',
-                'cnt_unread',
-                'cnt_done',
-                'has_category',
-                'notice'
+                "chat_storage",
+                "challs",
+                "catagorized_challs",
+                "cnt_unread",
+                "cnt_done",
+                "has_category",
+                "notice"
             ],
             //当前激活的会话
             active: null,
             //聊天记录
             chat_storage: {},
             //计时器id
-            _time: '',
+            _time: "",
             //会话分组列表
             has_category: {},
             //服务器返回的原始数据
@@ -141,78 +169,82 @@ export default {
             //注册表
             func_registry: {
                 查询分值: () => {
-                    ajax.post('/get_score', {
+                    ajax.post("/get_score", {
                         id: this.active
                     }).then(resp => {
                         if (resp.code === 1)
-                            this.recv('当前题目分值' + resp.score);
-                    })
+                            this.recv("当前题目分值" + resp.score);
+                    });
                 }
-            },
-        }
+            }
+        };
     },
     methods: {
-        recv (msg, role) {
+        recv(msg, role) {
             this.$refs.chat.recv(msg, role);
         },
-        chooseTalk (id) {
+        chooseTalk(id) {
             this.cnt_unread[id] = 0;
             this.active = id;
         },
-        handle_send (msg) {
+        handle_send(msg) {
             if (this.func_registry[msg] !== undefined) {
                 this.func_registry[msg]();
                 return;
             }
-            ajax.post('/submit', {
+            ajax.post("/submit", {
                 id: this.active,
                 flag: msg
-            }).then(resp => {
-                this.recv(resp.message);
-                if (resp.code == 1) {
-                    var category = this.challs[
-                        this.active
-                    ].type.toLowerCase();
-                    this.catagorized_challs[category][this.active].done = 1;
-                    Vue.set(this.challs[this.active], 'done', 1);
-                    Vue.set(
-                        this.cnt_done,
-                        category,
-                        this.cnt_done[category] + 1
-                    );
-                }
-            }).catch(error => console.log(error));
+            })
+                .then(resp => {
+                    this.recv(resp.message);
+                    if (resp.code == 1) {
+                        var category = this.challs[
+                            this.active
+                        ].type.toLowerCase();
+                        this.catagorized_challs[category][this.active].done = 1;
+                        Vue.set(this.challs[this.active], "done", 1);
+                        Vue.set(
+                            this.cnt_done,
+                            category,
+                            this.cnt_done[category] + 1
+                        );
+                    }
+                })
+                .catch(error => console.log(error));
         },
-        getChallenges () {
-            ajax.get('/get_all').then(resp => {
-                if(resp.code != undefined && resp.code === 0) {
-                    alert(resp.message);
-                    localStorage.removeItem('team_id');
-                    this.$router.push('/login');
-                }
-                else {
-                    this.challs = resp;
-                    this.generateList();
-                }
-            }).catch(error => console.log(error));
+        getChallenges() {
+            ajax.get("/get_all")
+                .then(resp => {
+                    if (resp.code != undefined && resp.code === 0) {
+                        alert(resp.message);
+                        localStorage.removeItem("team_id");
+                        this.$router.push("/login");
+                    } else {
+                        this.challs = resp;
+                        this.generateList();
+                    }
+                })
+                .catch(error => console.log(error));
         },
         //好多for
-        generateList () {
-            this.notice = '0';
-            for(var i of Object.keys(this.challs)) {
-                if(this.chat_storage[i] === undefined) {
+        generateList() {
+            this.notice = "0";
+            for (var i of Object.keys(this.challs)) {
+                if (this.chat_storage[i] === undefined) {
                     Vue.set(this.chat_storage, i, []);
                     Vue.set(this.cnt_unread, i, 0);
                 }
-                let recvd_cnt = this.chat_storage[i].filter(o => o.admin == 2).length;
-                for(var t = recvd_cnt; t < this.challs[i].text.length; t++)
+                let recvd_cnt = this.chat_storage[i].filter(o => o.admin == 2)
+                    .length;
+                for (var t = recvd_cnt; t < this.challs[i].text.length; t++)
                     this.chat_storage[i].push({
                         avatar: this.avatar,
                         text: this.challs[i].text[t],
                         admin: 2
                     });
                 this.cnt_unread[i] = this.challs[i].text.length - recvd_cnt;
-                if (i == '0') continue;
+                if (i == "0") continue;
                 if (this.challs[i].done) this.cnt_unread[i] = 0;
                 let type = this.challs[String(i)].type.toLowerCase();
 
@@ -233,24 +265,26 @@ export default {
             }
         }
     },
-    created () {
+    created() {
         //读取缓存
         for (var key of this.persisted) {
             var val =
                 sessionStorage.getItem(key) &&
                 JSON.parse(sessionStorage.getItem(key));
-            if(val !== null) this[key] = val;
+            if (val !== null) this[key] = val;
         }
         this.getChallenges();
-        ajax.get('/get_token').then(resp => {
-            localStorage.setItem('token', resp.token);
-        }).catch(error => console.log(error));
+        ajax.get("/get_token")
+            .then(resp => {
+                localStorage.setItem("token", resp.token);
+            })
+            .catch(error => console.log(error));
 
-        this._time = setInterval( () => {
+        this._time = setInterval(() => {
             this.getChallenges();
         }, this.$time);
     },
-    beforeDestroy () {
+    beforeDestroy() {
         //缓存
         for (var key of this.persisted) {
             var val = this[key];
@@ -259,7 +293,7 @@ export default {
         //销毁计数器
         clearInterval(this._time);
     }
-}
+};
 </script>
 
 <style scoped>
@@ -269,7 +303,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: url('../../static/images/back.png') no-repeat;
+    background: url("../../static/images/back.png") no-repeat;
     background-position: center center;
     background-size: cover;
 }
@@ -281,7 +315,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center
+    align-items: center;
 }
 .main-container {
     height: 695px;
@@ -325,7 +359,6 @@ export default {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    
 }
 .group-name .icon {
     margin: 0 10px;
@@ -392,7 +425,7 @@ export default {
 .none-info {
     height: 15px;
 }
-.talk-item.disable  {
+.talk-item.disable {
     color: rgb(182, 182, 182);
 }
 .talk-item.disable .avatar {
