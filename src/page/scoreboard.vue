@@ -16,7 +16,7 @@
                 <div class="rank-container" v-show="show === 'rank'">
                     <div  v-if="scoreboard != ''" v-for="(value, key) in scoreboard" :key="key" :class="['rank-item', key === '1' ? 'one' : '', key === '2' ? 'two' : '', key === '3' ? 'three' : '']">
                         <div class="rank-num">#{{key}}</div>
-                        <router-link :to="{ name: 'Team', params: {id: value.id}}" class="link">{{value.name}}</router-link>
+                        <router-link :to="'/team/'+value.id" class="link">{{value.name}}</router-link>
                         <div class="score-num">{{value.score}}</div>
                     </div>
 
@@ -25,7 +25,7 @@
                         <font-awesome-icon icon="spinner" spin />
                     </div>
                 </div>
-                
+
                 <!-- 分值榜 -->
                 <div class="rank-container" v-show="show === 'score'">
                     <div v-if="rankboard !== ''" v-for="(value, key) in rankboard" :key="key" :class="['rank-item', key === '1' ? 'one' : '', key === '2' ? 'two' : '', key === '3' ? 'three' : '']">
@@ -48,7 +48,8 @@
 import Vue from 'vue'
 import HeadBar from '../components/HeadBar.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import {faSpinner} from '@fortawesome/free-solid-svg-icons'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import ajax from '../tools/ajax'
 
 library.add(faSpinner);
 
@@ -90,11 +91,10 @@ library.add(faSpinner);
                 this.show = name;
             },
             getScoreboard () {
-                this.$get('/scoreboard').then(resp => {
+                ajax.get('/scoreboard').then(resp => {
                     this.scoreboard = resp;
                 }).catch(error => console.log(error));
-
-                this.$get('/challenge_rank').then(resp => {
+                ajax.get('/challenge_rank').then(resp => {
                     this.rankboard = resp;
                 }).catch(error => console.log(error));
             },

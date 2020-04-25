@@ -20,25 +20,9 @@
                         <div>{{score}}</div>
                         <div>SCORE</div>
                     </div>
-                    <div>
-                        <div>{{web}}</div>
-                        <div>WEB</div>
-                    </div>
-                    <div>
-                        <div>{{pwn}}</div>
-                        <div>PWN</div>
-                    </div>
-                    <div>
-                        <div>{{re}}</div>
-                        <div>RE</div>
-                    </div>
-                    <div>
-                        <div>{{misc}}</div>
-                        <div>MISC</div>
-                    </div>
-                    <div>
-                        <div>{{crypto}}</div>
-                        <div>CRYPTO</div>
+                    <div v-for="(chall, cat) in category_total" :key="cat">
+                        <div>{{chall}}</div>
+                        <div>{{cat}}</div>
                     </div>
                 </div>
             </div>
@@ -48,31 +32,17 @@
             </div>
             <div class="mine-bottom-container" v-show="!tableLoading">
                 <el-table
-                :data="tableData"
-                stripe
-                border
-                max-height="280px"
-                height=280
-                style="width: 720px">
-                    <el-table-column
-                    prop="date"
-                    label="时间"
-                    width="180">
-                    </el-table-column>
-                    <el-table-column
-                    prop="category"
-                    label="分类"
-                    width="180">
-                    </el-table-column>
-                    <el-table-column
-                    prop="name"
-                    label="题目"
-                    width="180">
-                    </el-table-column>
-                    <el-table-column
-                    prop="score"
-                    label="分值">
-                    </el-table-column>
+                    :data="solve_detail"
+                    stripe
+                    border
+                    max-height="280px"
+                    height="280"
+                    style="width: 720px"
+                >
+                    <el-table-column prop="date" label="时间" width="180"></el-table-column>
+                    <el-table-column prop="category" label="分类" width="180"></el-table-column>
+                    <el-table-column prop="name" label="题目" width="180"></el-table-column>
+                    <el-table-column prop="score" label="分值"></el-table-column>
                 </el-table>
             </div>
         </div>
@@ -80,10 +50,12 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import HeadBar from '../components/HeadBar.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import ajax from '../tools/ajax'
 
 library.add(faTrophy);
 library.add(faSpinner);
@@ -107,29 +79,21 @@ export default {
             score: 0,
             solves: [],
             tableLoading: true,
-            echartData: [{
-                name: 'web',
-                value: 0,
-            },{
-                name: 're',
-                value: 0,
-            },{
-                name: 'pwn',
-                value: 0,
-            },{
-                name: 'misc',
-                value: 0,
-            },{
-                name: 'crypto',
-                value: 0,
-            }],
+            category_total: {}
         }
     },
     computed: {
-        tableData () {
-            let tableData = this.solves;
+        echart_data () {
+            this.solves.sort((a, b) => a - b);
+            var ret = []
+            for (var i in this.category_total)
+                ret.push({name: i, value: this.category_total[i]})
+            return ret
+        },
+        solve_detail () {
+            let solve_detail = this.solves;
             //时间从近到远排序
-            tableData.sort( (a,b) => {
+            solve_detail.sort((a, b) => {
                 if(a.date > b.date) {
                     return 1;
                 }
@@ -137,74 +101,29 @@ export default {
                     return -1;
                 }
             })
-            return tableData;
+            return solve_detail;
         },
-        web () {
-            let web = 0;
-            for(let i in this.solves) {
-                if(this.solves[i].category.toLowerCase() === 'web') {
-                    web++;
-                }
-            }
-            return web;
-        },
-        re () {
-            let re = 0;
-            for(let i in this.solves) {
-                if(this.solves[i].category.toLowerCase() === 're') {
-                    re++;
-                }
-            }
-            return re;
-        },
-        pwn () {
-            let pwn = 0;
-            for(let i in this.solves) {
-                if(this.solves[i].category.toLowerCase() === 'pwn') {
-                    pwn++;
-                }
-            }
-            return pwn;
-        },
-        misc () {
-            let misc = 0;
-            for(let i in this.solves) {
-                if(this.solves[i].category.toLowerCase() === 'misc') {
-                    misc++;
-                }
-            }
-            return misc;
-        },
-        crypto () {
-            let crypto = 0;
-            for(let i in this.solves) {
-                if(this.solves[i].category.toLowerCase() === 'crypto') {
-                    crypto++;
-                }
-            }
-            return crypto;
-        }
     },
     methods: {
-        getInfo (id) {
-            this.$get('/team/'+id).then(resp => {
+        getInfo(id) {
+            ajax.get('/team/'+id).then(resp => {
                 this.name = resp.name;
                 this.rank = resp.rank;
                 this.score = resp.score;
-                this.tableLoading = false;
                 for(let i in resp.solves) {
-                    this.solves.push(resp.solves[i]);
-                    for(let ii in this.echartData) {
-                        if(this.echartData[ii].name === resp.solves[i].category.toLowerCase()) {
-                            //此处有.000000000002 bug 注意截取小数点后位数
-                            this.echartData[ii].value = (parseFloat(this.echartData[ii].value) + parseFloat(resp.solves[i].score)).toFixed(3);
-                        }
-                    }
+                    var solve = resp.solves[i];
+                    this.solves.push(solve);
+                    if (this.category_total[solve.category] === undefined)
+                        this.category_total[solve.category] = 0.0;
+                    this.category_total[solve.category] += parseFloat(solve.score);
                 }
-                this.echartData.sort( (a,b) => { return a.value - b.value});
+                for(let i in this.category_total)
+                    this.category_total[i] = this.category_total[i].toFixed(2)
+
                 this.$nextTick(() => {
                     this.drawPie();
                 })
+                this.tableLoading = false;
             }).catch(error => console.log(error));
         },
         drawPie () {
@@ -221,7 +140,7 @@ export default {
                         type:'pie',
                         radius : '70%',
                         center: ['50%', '50%'],
-                        data: this.echartData,
+                        data: this.echart_data,
                         roseType: 'radius',
                         label: {
                             normal: {

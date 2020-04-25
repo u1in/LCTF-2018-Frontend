@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import ajax from '../tools/ajax';
     export default {
         data() {
             return {
@@ -20,7 +21,7 @@
                 this.$router.push('/login');
             },
             getHtml () {
-                this.$get('/get_index').then(resp => {
+                ajax.get('/get_index').then(resp => {
                     if(resp.code === 1) {
                         this.html = resp.content;
                     }

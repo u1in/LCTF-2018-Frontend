@@ -1,56 +1,22 @@
-import { baseURL }  from '../config/config.js';
+import { baseURL } from './config';
 
-function ajax_get(url) {
-    return new Promise(function (resolve, reject) {
-        var XHR = new XMLHttpRequest();
-        XHR.withCredentials = true;
-
-        //此函数暂时不能传递带参数的GET请求
-        XHR.open('GET', baseURL + url, true);
-        XHR.send();
-
-        XHR.onreadystatechange = function () {
-            if (XHR.readyState == 4) {
-                if (XHR.status == 200) {
-                    try {
-                        var response = JSON.parse(XHR.responseText);
-                        resolve(response);
-                    } catch (e) {
-                        reject(e);
-                    }
-                } else {
-                    reject(new Error(XHR.statusText));
-                }
-            }
-        }
+function request(method, url, data) {
+    return fetch(baseURL + url, {
+        method: method,
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': localStorage.getItem('token')
+        },
+        credentials: 'include'
+    }).then(res => {
+        if (res.status === 200)
+            return res.json()
+        throw res
     })
-}  
-
-function ajax_post(url, data) {
-    return new Promise(function (resolve, reject) {
-        var XHR = new XMLHttpRequest();
-        XHR.withCredentials = true;
-        XHR.open('POST', baseURL + url, true);
-        XHR.setRequestHeader("Content-Type", "application/json");
-        XHR.setRequestHeader("X-CSRFToken", localStorage.getItem('token'));
-        
-        XHR.send(JSON.stringify(data));
-
-        XHR.onreadystatechange = function () {
-            if (XHR.readyState == 4) {
-                if (XHR.status == 200) {
-                    try {
-                        var response = JSON.parse(XHR.responseText);
-                        resolve(response);
-                    } catch (e) {
-                        reject(e);
-                    }
-                } else {
-                    reject(new Error(XHR.statusText));
-                }
-            }
-        }
-    })
-}  
-
-export { ajax_get, ajax_post };
+}
+export default {
+    request: request,
+    get: url => request('GET', url),
+    post: (url, data) => request('POST', url, data)
+}

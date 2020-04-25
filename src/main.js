@@ -6,16 +6,15 @@ import router from './router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { Table, TableColumn } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import {ajax_get, ajax_post } from './tools/ajax'
-import { baseTime } from './config/config.js';
+import vueSmoothScroll from 'vue2-smooth-scroll';
+import { baseTime } from './tools/config.js';
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.use(Table);
 Vue.use(TableColumn);
+Vue.use(vueSmoothScroll);
 
-Vue.prototype.$get = ajax_get;
-Vue.prototype.$post = ajax_post;
 Vue.prototype.$time = baseTime;
 
 Vue.config.productionTip = false;

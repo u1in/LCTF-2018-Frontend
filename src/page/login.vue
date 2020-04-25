@@ -2,8 +2,11 @@
     <div class="container">
         <div class="login-container">
             <div class="top-bar">
-                <div class="red" @click="jump"></div>
-                <font-awesome-icon icon="pen" class="icon" @click="showToggle"/>
+                <div class="red" @click="$router.push("/index")"></div>
+                <div class="tip">
+                    <font-awesome-icon id="toggle" icon="pen" class="icon" @click="showToggle"/>
+                    <span class="tiptext">{{showLogin?"注册":"登陆"}}</span>
+                </div>
             </div>
             <div class="middle" v-show="showLogin">
                 <img src="../../static/images/avatar.jpg">
@@ -33,6 +36,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import { faArrowAltCircleRight } from '@fortawesome/free-regular-svg-icons'
+import ajax from '../tools/ajax'
 library.add(faPen);
 library.add(faArrowAltCircleRight);
 export default {
@@ -74,14 +78,10 @@ export default {
                     name: this.loginName,
                     password: this.loginPassword,
                 }
-                this.$post('/login', data).then(resp => {
-                    if(resp.code === 1) {
-                        localStorage.setItem('team_id', resp.team_id);
-                        this.$router.push('/challenges');
-                    }
-                    else {
-                        this.messageBox(resp.message);
-                    }
+                ajax.post('/login', data).then(resp => {
+                    if(resp.code !== 1) this.messageBox('用户名或密码错误');
+                    localStorage.setItem('team_id', resp.team_id);
+                    this.$router.push('/challenges');
                 }).catch(error => console.log(error));
             }
             else {
@@ -108,7 +108,7 @@ export default {
                         password: this.registerPassword,
                         school: this.registerSchool,
                     }
-                    this.$post('/register', data).then(resp => {
+                    ajax.post('/register', data).then(resp => {
                         if(resp.code === 1) {
                             this.messageBox('注册成功');
                             this.showToggle();
@@ -121,12 +121,9 @@ export default {
             }
         },
         getToken() {
-            this.$get('/get_token').then(resp => {
+            ajax.get('/get_token').then(resp => {
                 localStorage.setItem('token', resp.token);
             }).catch(error => console.log(error));
-        },
-        jump () {
-            this.$router.push('/index');
         }
     },
     created () {
@@ -275,5 +272,21 @@ input {
     color: #ffffff;
     background: rgb(38, 123, 253);
     border: 1px solid rgb(129, 169, 241);
+}
+
+.tiptext {
+    visibility: hidden;
+    width: 60px;
+    background-color: gray;
+    color: #fff;
+    text-align: center;
+    margin: 0 10px;
+    border-radius: 6px;
+
+    position: absolute;
+}
+
+.tip:hover .tiptext {
+    visibility: visible;
 }
 </style>

@@ -27,6 +27,7 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCommentDots, faThLarge, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import ajax from '../tools/ajax'
 
 library.add(faCommentDots);
 library.add(faThLarge);
@@ -54,10 +55,10 @@ export default {
             }
         },
         logOut () {
-            this.$get('/logout').then(resp => {
+            ajax.get('/logout').then(resp => {
                 if(resp.code === 1) {
                     localStorage.removeItem('team_id');
-                    this.jump('login');
+                    this.$router.push('/login');
                 }
             }).catch(error => console.log(error));
         },
@@ -67,9 +68,6 @@ export default {
     },
     beforeUpdate () {
         this.page = this.$route.name;
-    },
-    mounted () {
-        
     },
 }
 </script>
