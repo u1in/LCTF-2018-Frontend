@@ -5,45 +5,44 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                countDownTime: '尚未开始',
-                html: '',
-            }
+import ajax from "../tools/ajax";
+export default {
+    data() {
+        return {
+            countDownTime: "尚未开始",
+            html: ""
+        };
+    },
+    methods: {
+        jump(url) {
+            window.open(url);
         },
-        methods: {
-            jump (url) {
-                window.open(url);
-            },
-            start() {
-                this.$router.push('/login');
-            },
-            getHtml () {
-                this.$get('/get_index').then(resp => {
-                    if(resp.code === 1) {
+        start() {
+            this.$router.push("/login");
+        },
+        getHtml() {
+            ajax.get("/get_index")
+                .then(resp => {
+                    if (resp.code === 1) {
                         this.html = resp.content;
                     }
-                }).catch(error => {console.log(error)});
-                
-            }
-        },
-        mounted () {
-            
-        },
-        created () {
-            this.getHtml();
-        },
-        beforeDestroy () {
-            
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         }
-    }
+    },
+    mounted() {},
+    created() {
+        this.getHtml();
+    },
+    beforeDestroy() {}
+};
 </script>
 
 <style scoped>
 .container {
     height: 100%;
     width: 100%;
-    
 }
 </style>

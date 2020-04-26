@@ -8,16 +8,33 @@
         </div>
         <!-- 中间导航按钮 -->
         <div class="nav-contaier">
-            <font-awesome-icon icon="comment-dots" :class="[page == 'Challenges' ? 'active' : '' ,'nav-icon']" @click="jump('challenges')"/>
-            <font-awesome-icon icon="user" :class="[page == 'Team' ? 'active' : '' ,'nav-icon']" @click="jump('team')"/>
-            <font-awesome-icon icon="th-large" :class="[page == 'ScoreBoard' ? 'active' : '' ,'nav-icon']" @click="jump('scoreboard')"/>
+            <font-awesome-icon
+                icon="comment-dots"
+                :class="[page == 'Challenges' ? 'active' : '' ,'nav-icon']"
+                @click="jump('challenges')"
+            />
+            <font-awesome-icon
+                icon="user"
+                :class="[page == 'Team' ? 'active' : '' ,'nav-icon']"
+                @click="jump('team')"
+            />
+            <font-awesome-icon
+                icon="th-large"
+                :class="[page == 'ScoreBoard' ? 'active' : '' ,'nav-icon']"
+                @click="jump('scoreboard')"
+            />
         </div>
         <!-- 右边头像 -->
         <div class="avatar-container">
-            <div class="avatar" @click="logOut" @mouseover="logout = true" @mouseout="logout = false">
-                <img src="../../static/images/avatar.jpg" title="登出" v-show="!logout">
+            <div
+                class="avatar"
+                @click="logOut"
+                @mouseover="logout = true"
+                @mouseout="logout = false"
+            >
+                <img src="../../static/images/avatar.jpg" title="登出" v-show="!logout" />
                 <div class="logout" v-show="logout">
-                    <font-awesome-icon icon="sign-out-alt"/>
+                    <font-awesome-icon icon="sign-out-alt" />
                 </div>
             </div>
         </div>
@@ -25,8 +42,14 @@
 </template>
 
 <script>
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCommentDots, faThLarge, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faCommentDots,
+    faThLarge,
+    faUser,
+    faSignOutAlt
+} from "@fortawesome/free-solid-svg-icons";
+import ajax from "../tools/ajax";
 
 library.add(faCommentDots);
 library.add(faThLarge);
@@ -34,44 +57,40 @@ library.add(faUser);
 library.add(faSignOutAlt);
 
 export default {
-    name: 'headbar',
+    name: "headbar",
     data() {
         return {
-            page: '',
-            logout: false,
+            page: "",
+            logout: false
+        };
+    },
+    computed: {},
+    methods: {
+        jump(url) {
+            if (url === "team") {
+                this.$router.push("/team/" + localStorage.getItem("team_id"));
+            } else {
+                this.$router.push("/" + url);
+            }
+        },
+        logOut() {
+            ajax.get("/logout")
+                .then(resp => {
+                    if (resp.code === 1) {
+                        localStorage.removeItem("team_id");
+                        this.$router.push("/login");
+                    }
+                })
+                .catch(error => console.log(error));
         }
     },
-    computed: {
-
-    },
-    methods: {
-        jump (url) {
-            if(url === 'team') {
-                this.$router.push('/team/'+localStorage.getItem('team_id'));
-            }
-            else {
-                this.$router.push('/' + url);
-            }
-        },
-        logOut () {
-            this.$get('/logout').then(resp => {
-                if(resp.code === 1) {
-                    localStorage.removeItem('team_id');
-                    this.jump('login');
-                }
-            }).catch(error => console.log(error));
-        },
-    },
-    created () {
+    created() {
         this.page = this.$route.name;
     },
-    beforeUpdate () {
+    beforeUpdate() {
         this.page = this.$route.name;
-    },
-    mounted () {
-        
-    },
-}
+    }
+};
 </script>
 
 <style scoped>
@@ -120,7 +139,7 @@ export default {
     align-items: center;
     cursor: pointer;
 }
-.avatar  > img {
+.avatar > img {
     height: 100%;
     width: 100%;
 }

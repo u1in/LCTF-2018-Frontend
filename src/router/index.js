@@ -45,24 +45,13 @@ router.beforeEach((to, from, next) => {
   let needIdList = ['Challenges', 'Team', 'ScoreBoard'];
 
   if (needIdList.indexOf(to.name) > -1) {
-    if (teamId === null) {
-      next({
-        path: '/login',
-      })
-    }
-    else {
-      next();
-    }
+    if (teamId === null) next({ path: '/login', })
+    else next();
   }
   else {
-    if (to.name === 'Login' && teamId != null) {
-      next({
-        path: '/challenges',
-      })
-    }
-    else {
-      next();
-    }
+    if (to.name === 'Login' && teamId != null)
+      next({ path: '/challenges', })
+    else next();
   }
 })
 
